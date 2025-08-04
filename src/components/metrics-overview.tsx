@@ -2,25 +2,36 @@
 
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DollarSign, Users, Target, TrendingUp } from "lucide-react"
+import { DollarSign, Users, Target, TrendingUp, LucideIcon } from "lucide-react"
 
-const iconMap = {
+// CHANGE 1: Import the 'KeyMetric' type from your central types file.
+import { KeyMetric } from "@/lib/types";
+
+// A mapping to dynamically select an icon component based on the string from your data
+const iconMap: Record<string, LucideIcon> = {
   DollarSign,
-  User: Users,
+  User: Users, // Added 'User' as a possible key
   Users,
-  ShoppingCart: Target,
-  TrendingUp,
+  ShoppingCart: Target, // Mapped ShoppingCart to Target icon
   Target,
+  TrendingUp,
 };
 
-export function MetricsOverview({ metrics }: { metrics: any[] }) {
+// CHANGE 2: Define a dedicated interface for the component's props for clarity.
+interface MetricsOverviewProps {
+  metrics: KeyMetric[];
+}
+
+// CHANGE 3: Use the new interface to type the props, replacing 'any[]'.
+export function MetricsOverview({ metrics }: MetricsOverviewProps) {
   return (
     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
       {metrics.map((metric) => {
+        // The 'metric' object is now correctly typed as 'KeyMetric'.
         const Icon = iconMap[metric.icon] || DollarSign;
         return (
           <motion.div
-            key={metric.title || metric.id}
+            key={metric.id} // Using the unique 'id' is the best practice for the key.
             whileHover={{ scale: 1.03 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >

@@ -60,17 +60,17 @@ export const dashboardData = {
     const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
     const randomName = campaignNames[Math.floor(Math.random() * campaignNames.length)] + ` ${i + 1}`;
     const randomSpend = (Math.random() * 5000 + 1000).toFixed(2);
-    const randomROI = Math.floor(Math.random() * 500) + 50; // ROI between 50% to 550%
+    const randomROI = Math.floor(Math.random() * 500) + 50;
 
-    // Generate a random date within the past year
     const randomTimestamp = new Date(
       Date.now() - Math.floor(Math.random() * 365 * 24 * 60 * 60 * 1000)
     );
-    const formattedDate = randomTimestamp.toISOString().split('T')[0]; // YYYY-MM-DD format
+    const formattedDate = randomTimestamp.toISOString().split('T')[0];
 
     return {
+      id: i + 1, // <-- THE FIX: This adds the unique ID for each campaign.
       campaignName: randomName,
-      status: randomStatus,
+      status: randomStatus as "Active" | "Paused" | "Completed",
       spend: `$${randomSpend}`,
       roi: `${randomROI}%`,
       date: formattedDate,
