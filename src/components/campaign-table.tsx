@@ -11,7 +11,7 @@ import { Search, ChevronLeft, ChevronRight, ArrowUpDown, FileDown } from "lucide
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-// CHANGE 1: Define a specific type for your campaign data to replace 'any'.
+// Define a specific type for your campaign data
 export interface Campaign {
   id: number;
   campaignName: string;
@@ -21,12 +21,12 @@ export interface Campaign {
   date: string;
 }
 
-// CHANGE 2: Use the new 'Campaign' type for the data prop. This is the main fix.
+// Use the new 'Campaign' type for the data prop
 export function CampaignTable({ data }: { data: Campaign[] }) {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<Campaign["status"] | "all">("all")
   const [currentPage, setCurrentPage] = useState(1)
-  // CHANGE 3: Make the sort field type-safe using 'keyof Campaign'.
+  // Make the sort field type-safe using 'keyof Campaign'
   const [sortField, setSortField] = useState<keyof Campaign | null>(null)
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
   const itemsPerPage = 5
@@ -43,7 +43,7 @@ export function CampaignTable({ data }: { data: Campaign[] }) {
     const aValue = a[sortField]
     const bValue = b[sortField]
 
-    // This logic is now type-safe because 'a' and 'b' are known as 'Campaign' types.
+    // This logic correctly parses numbers from strings for accurate sorting
     if (sortField === "spend" || sortField === "roi") {
       const numA = Number.parseFloat(aValue.toString().replace(/[$%,]/g, ""));
       const numB = Number.parseFloat(bValue.toString().replace(/[$%,]/g, ""));
@@ -61,7 +61,7 @@ export function CampaignTable({ data }: { data: Campaign[] }) {
   const startIndex = (currentPage - 1) * itemsPerPage
   const paginatedData = sortedData.slice(startIndex, startIndex + itemsPerPage)
 
-  // CHANGE 4: Make the handleSort field parameter type-safe.
+  // Make the handleSort field parameter type-safe
   const handleSort = (field: keyof Campaign) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc")
@@ -71,7 +71,7 @@ export function CampaignTable({ data }: { data: Campaign[] }) {
     }
   }
   
-  // CHANGE 5: Make the status parameter type-safe.
+  // Make the status parameter type-safe
   const getStatusBadge = (status: Campaign["status"]) => {
     const variants: Record<Campaign["status"], "default" | "secondary" | "outline"> = {
       Active: "default",
@@ -88,7 +88,7 @@ export function CampaignTable({ data }: { data: Campaign[] }) {
     autoTable(doc, {
       startY: 24,
       head: [["Campaign Name", "Status", "Spend", "ROI", "Date"]],
-      // 'campaign' is now correctly typed from the filteredData array.
+      // 'campaign' is now correctly typed from the filteredData array
       body: filteredData.map((campaign) => [
         campaign.campaignName,
         campaign.status,
@@ -164,24 +164,19 @@ export function CampaignTable({ data }: { data: Campaign[] }) {
           </Table>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between space-x-2 py-4">
+        <div className="flex items-center justify-between space-x-2 py-4">
           <div className="text-sm text-muted-foreground">
-            Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, sortedData.length)} of {sortedData.length}{" "}
-            results
+            Page {currentPage} of {totalPages}
           </div>
-          <div className="flex items-center space-x-2 mt-4 sm:mt-0">
+          <div className="flex items-center space-x-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
             >
-              <ChevronLeft className="h-4 w-4" />
               Previous
             </Button>
-            <div className="text-sm font-medium">
-              Page {currentPage} of {totalPages}
-            </div>
             <Button
               variant="outline"
               size="sm"
@@ -189,7 +184,6 @@ export function CampaignTable({ data }: { data: Campaign[] }) {
               disabled={currentPage === totalPages}
             >
               Next
-              <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
         </div>
