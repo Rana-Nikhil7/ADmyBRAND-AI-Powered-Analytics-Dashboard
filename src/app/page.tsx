@@ -2,10 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { dashboardData as mockData } from "@/lib/mock-data";
-
-// CHANGE 1: Import the 'Variants' type from framer-motion
 import { motion, Variants } from "framer-motion"
-
 import { DashboardData } from "@/lib/types";
 import { DashboardHeader } from "@/components/dashboard-header"
 import { MetricsOverview } from "@/components/metrics-overview"
@@ -14,7 +11,6 @@ import { CampaignTable } from "@/components/campaign-table"
 import { DashboardSkeleton } from "@/components/dashboard-skeleton"
 import { DateRangePicker } from "@/components/date-range-picker";
 
-// CHANGE 2: Apply the 'Variants' type to your animation object
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -26,7 +22,6 @@ const containerVariants: Variants = {
   },
 }
 
-// CHANGE 3: Apply the 'Variants' type to your other animation object
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
@@ -42,7 +37,9 @@ const itemVariants: Variants = {
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({ from: undefined, to: undefined });
+  
+  // THE FIX: Changed 'undefined' to 'null' to match the DateRangePicker component's expected props.
+  const [dateRange, setDateRange] = useState<{ from: Date | null; to: Date | null }>({ from: null, to: null });
 
   useEffect(() => {
     const timer = setTimeout(() => {
