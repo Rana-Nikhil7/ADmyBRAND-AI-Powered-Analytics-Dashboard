@@ -3,7 +3,7 @@
 import * as React from "react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { DateRange } from "react-day-picker"; // Import the correct type from the library
+import { DateRange } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -14,8 +14,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-// Define a reusable interface for the component's props
-interface DateRangePickerProps extends React.ComponentProps<"div"> {
+// THE FIX: Simplified the props interface to avoid colliding with default HTML props.
+export interface DateRangePickerProps {
+  className?: React.HTMLAttributes<HTMLDivElement>["className"];
   date: DateRange | undefined;
   onSelect: (date: DateRange | undefined) => void;
 }
