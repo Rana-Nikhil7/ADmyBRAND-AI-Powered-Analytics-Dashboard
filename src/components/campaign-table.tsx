@@ -11,32 +11,39 @@ import { Search, ChevronLeft, ChevronRight, ArrowUpDown, FileDown } from "lucide
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-export function CampaignTable({ data }: { data: any[] }) {
+// STEP 1: Define the shape of your Campaign data. This replaces 'any'.
+export interface Campaign {
+  id: number; // Make sure your mock data includes a unique 'id' for each campaign
+  campaignName: string;
+  status: "Active" | "Paused" | "Completed";
+  spend: string;
+  roi: string;
+  date: string;
+}
+
+// STEP 2: Use the new 'Campaign' type for the component's props.
+export function CampaignTable({ data }: { data: Campaign[] }) {
   const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
+  const [statusFilter, setStatusFilter] = useState<Campaign["status"] | "all">("all")
   const [currentPage, setCurrentPage] = useState(1)
-  const [sortField, setSortField] = useState<string | null>(null)
+  // Use 'keyof Campaign' for type-safe sorting
+  const [sortField, setSortField] = useState<keyof Campaign | null>(null)
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
   const itemsPerPage = 5
 
   const filteredData = data.filter(
     (campaign) =>
-      (campaign.campaignName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        campaign.status.toLowerCase().includes(searchTerm.toLowerCase())) &&
+      (campaign.campaignName.toLowerCase().includes(searchTerm.toLowerCase())) &&
       (statusFilter === "all" || campaign.status === statusFilter)
   )
 
   const sortedData = [...filteredData].sort((a, b) => {
-    if (!sortField) return 0
+    if (!sortField) return 0;
 
-    let aValue = a[sortField as keyof typeof a]
-    let bValue = b[sortField as keyof typeof b]
-
-    if (sortField === "spend" || sortField === "roi") {
-      aValue = Number.parseFloat(aValue.toString().replace(/[$%,]/g, ""))
-      bValue = Number.parseFloat(bValue.toString().replace(/[$%,]/g, ""))
-    }
-
+    const aValue = a[sortField];
+    const bValue = b[sortField];
+    
+    // This sorting logic is now type-safe
     if (aValue < bValue) return sortDirection === "asc" ? -1 : 1
     if (aValue > bValue) return sortDirection === "asc" ? 1 : -1
     return 0
@@ -46,7 +53,7 @@ export function CampaignTable({ data }: { data: any[] }) {
   const startIndex = (currentPage - 1) * itemsPerPage
   const paginatedData = sortedData.slice(startIndex, startIndex + itemsPerPage)
 
-  const handleSort = (field: string) => {
+  const handleSort = (field: keyof Campaign) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc")
     } else {
@@ -55,14 +62,13 @@ export function CampaignTable({ data }: { data: any[] }) {
     }
   }
 
-  const getStatusBadge = (status: string) => {
-    const variants = {
+  const getStatusBadge = (status: Campaign["status"]) => {
+    const variants: Record<Campaign['status'], "default" | "secondary" | "outline"> = {
       Active: "default",
       Paused: "secondary",
       Completed: "outline",
-    } as const
-
-    return <Badge variant={variants[status as keyof typeof variants] || "default"}>{status}</Badge>
+    }
+    return <Badge variant={variants[status]}>{status}</Badge>
   }
 
   function handleExportPDF() {
@@ -72,6 +78,7 @@ export function CampaignTable({ data }: { data: any[] }) {
     autoTable(doc, {
       startY: 24,
       head: [["Campaign Name", "Status", "Spend", "ROI", "Date"]],
+      // The 'campaign' parameter is now correctly typed as 'Campaign'
       body: filteredData.map((campaign) => [
         campaign.campaignName,
         campaign.status,
@@ -109,8 +116,8 @@ export function CampaignTable({ data }: { data: any[] }) {
               className="pl-8"
             />
           </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter} className="md:w-1/2 mt-4 md:mt-0">
-            <SelectTrigger className="w-full">
+          <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as Campaign["status"] | "all")}>
+            <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
@@ -126,56 +133,21 @@ export function CampaignTable({ data }: { data: any[] }) {
           <Table className="min-w-full">
             <TableHeader>
               <TableRow>
-                <TableHead>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleSort("name")}
-                    className="h-auto p-0 font-medium hover:scale-105 transition-transform duration-200"
-                  >
-                    Campaign Name
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </TableHead>
-                <TableHead>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleSort("status")}
-                    className="h-auto p-0 font-medium hover:scale-105 transition-transform duration-200"
-                  >
-                    Status
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </TableHead>
-                <TableHead>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleSort("spend")}
-                    className="h-auto p-0 font-medium hover:scale-105 transition-transform duration-200"
-                  >
-                    Spend
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </TableHead>
-                <TableHead>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleSort("roi")}
-                    className="h-auto p-0 font-medium hover:scale-105 transition-transform duration-200"
-                  >
-                    ROI
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </TableHead>
-                <TableHead>Date</TableHead>
+                {/* Simplified headers for clarity */}
+                <TableHead onClick={() => handleSort('campaignName')}><Button variant="ghost">Campaign Name<ArrowUpDown className="ml-2 h-4 w-4" /></Button></TableHead>
+                <TableHead onClick={() => handleSort('status')}><Button variant="ghost">Status<ArrowUpDown className="ml-2 h-4 w-4" /></Button></TableHead>
+                <TableHead onClick={() => handleSort('spend')}><Button variant="ghost">Spend<ArrowUpDown className="ml-2 h-4 w-4" /></Button></TableHead>
+                <TableHead onClick={() => handleSort('roi')}><Button variant="ghost">ROI<ArrowUpDown className="ml-2 h-4 w-4" /></Button></TableHead>
+                <TableHead onClick={() => handleSort('date')}><Button variant="ghost">Date<ArrowUpDown className="ml-2 h-4 w-4" /></Button></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {paginatedData.map((campaign) => (
-                <TableRow key={campaign.id} className="hover:bg-muted/50 transition-colors duration-200 cursor-pointer">
+                <TableRow key={campaign.id} className="hover:bg-muted/50">
                   <TableCell className="font-medium">{campaign.campaignName}</TableCell>
                   <TableCell>{getStatusBadge(campaign.status)}</TableCell>
                   <TableCell>{campaign.spend}</TableCell>
-                  <TableCell className="font-medium text-green-600">{campaign.roi}</TableCell>
+                  <TableCell>{campaign.roi}</TableCell>
                   <TableCell>{campaign.date}</TableCell>
                 </TableRow>
               ))}
@@ -183,34 +155,26 @@ export function CampaignTable({ data }: { data: any[] }) {
           </Table>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between space-x-2 py-4">
+        <div className="flex items-center justify-between space-x-2 py-4">
           <div className="text-sm text-muted-foreground">
-            Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, sortedData.length)} of {sortedData.length}{" "}
-            results
+            Page {currentPage} of {totalPages}
           </div>
-          <div className="flex items-center space-x-2 mt-4 sm:mt-0">
+          <div className="flex items-center space-x-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="hover:scale-105 transition-transform duration-200"
             >
-              <ChevronLeft className="h-4 w-4" />
               Previous
             </Button>
-            <div className="text-sm font-medium">
-              Page {currentPage} of {totalPages}
-            </div>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="hover:scale-105 transition-transform duration-200"
             >
               Next
-              <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
         </div>
