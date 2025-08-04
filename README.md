@@ -1,6 +1,6 @@
 # ADmyBRAND Insights - AI-Powered Analytics Dashboard
 
-### [View Live Demo]([https://a-dmy-brand-ai-powered-analytics-da.vercel.app/])
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge&logo=vercel)](https://a-dmy-brand-ai-powered-analytics-da.vercel.app/)
 
 ## Project Overview
 
@@ -45,4 +45,4 @@ To run this project locally, follow these steps:
     ```bash
     npm run dev
     ```
-    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+    Open [http://localhost:2025](http://localhost:2025) with your browser to see the result.
