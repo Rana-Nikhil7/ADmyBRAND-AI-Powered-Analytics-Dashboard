@@ -10,6 +10,7 @@ import { ChartsSection } from "@/components/charts-section"
 import { CampaignTable } from "@/components/campaign-table"
 import { DashboardSkeleton } from "@/components/dashboard-skeleton"
 import { DateRangePicker } from "@/components/date-range-picker";
+import { DateRange } from "react-day-picker";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -37,9 +38,7 @@ const itemVariants: Variants = {
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
-  // THE FIX: Changed 'undefined' to 'null' to match the DateRangePicker component's expected props.
-  const [dateRange, setDateRange] = useState<{ from: Date | null; to: Date | null }>({ from: null, to: null });
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -73,7 +72,7 @@ export default function DashboardPage() {
 
   const filteredCampaigns = useMemo(() => {
     if (!data) return [];
-    if (!dateRange.from || !dateRange.to) return data.campaignPerformance;
+    if (!dateRange?.from || !dateRange?.to) return data.campaignPerformance;
 
     return data.campaignPerformance.filter(campaign => {
       const campaignDate = new Date(campaign.date);
@@ -110,8 +109,9 @@ export default function DashboardPage() {
             <ChartsSection />
           </motion.div>
 
-          <motion.div variants={itemVariants}>
-            <DateRangePicker dateRange={dateRange} setDateRange={setDateRange} />
+          <motion.div variants={itemVariants} className="space-y-4">
+            {/* THE FINAL FIX: Changed prop names to 'date' and 'onSelect' */}
+            <DateRangePicker date={dateRange} onSelect={setDateRange} />
             <CampaignTable data={filteredCampaigns} />
           </motion.div>
         </motion.div>
