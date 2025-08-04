@@ -1,6 +1,6 @@
 # ADmyBRAND Insights - AI-Powered Analytics Dashboard
 
-### [View Live Demo]([LINK TO YOUR DEPLOYED VERCEL SITE])
+### [View Live Demo]([https://a-dmy-brand-ai-powered-analytics-da.vercel.app/])
 
 ## Project Overview
 
