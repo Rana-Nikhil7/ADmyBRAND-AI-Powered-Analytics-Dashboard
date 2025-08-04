@@ -1,5 +1,7 @@
 "use client"
 
+// CHANGE 1: Import useState and useEffect from React
+import { useState, useEffect } from "react"
 import { useTheme } from "next-themes"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -15,6 +17,14 @@ import { User, Settings, LogOut, Bell, Moon, Sun } from "lucide-react"
 
 export function DashboardHeader() {
   const { theme, setTheme } = useTheme()
+  
+  // CHANGE 2: Add a 'mounted' state to track if the component is on the client
+  const [mounted, setMounted] = useState(false)
+
+  // This effect runs once on the client to set 'mounted' to true
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark")
@@ -32,14 +42,20 @@ export function DashboardHeader() {
             <Bell className="h-4 w-4" />
           </Button>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            className="hover:scale-105 transition-transform duration-200"
-          >
-            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </Button>
+          {/* CHANGE 3: Conditionally render the button to avoid hydration mismatch */}
+          {mounted ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="hover:scale-105 transition-transform duration-200"
+            >
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+          ) : (
+            // Render a placeholder to prevent layout shift
+            <div className="h-10 w-10" />
+          )}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
