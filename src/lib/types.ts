@@ -17,8 +17,6 @@ export interface Campaign {
     icon: string;
   }
   
-  // Add other types for your charts if needed...
-  
   // This is the master type for your entire dashboard's data
   export interface DashboardData {
     keyMetrics: KeyMetric[];

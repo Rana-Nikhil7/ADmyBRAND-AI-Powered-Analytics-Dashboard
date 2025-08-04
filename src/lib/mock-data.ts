@@ -1,4 +1,10 @@
-export const dashboardData = {
+// In src/lib/mock-data.ts
+
+import { DashboardData } from "./types"; // Import the master type
+
+// THE FIX: We apply the DashboardData type to our object.
+// This forces our data to match the structure defined in types.ts.
+export const dashboardData: DashboardData = {
   keyMetrics: [
     {
       id: 1,
@@ -55,7 +61,7 @@ export const dashboardData = {
   ],
 
   campaignPerformance: Array.from({ length: 50 }, (_, i) => {
-    const statuses = ['Active', 'Paused', 'Completed'];
+    const statuses: ("Active" | "Paused" | "Completed")[] = ['Active', 'Paused', 'Completed'];
     const campaignNames = ['Summer Sale', 'Brand Awareness', 'Product Launch', 'Holiday Promo', 'Retargeting Push'];
     const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
     const randomName = campaignNames[Math.floor(Math.random() * campaignNames.length)] + ` ${i + 1}`;
@@ -68,9 +74,9 @@ export const dashboardData = {
     const formattedDate = randomTimestamp.toISOString().split('T')[0];
 
     return {
-      id: i + 1, // <-- THE FIX: This adds the unique ID for each campaign.
+      id: i + 1,
       campaignName: randomName,
-      status: randomStatus as "Active" | "Paused" | "Completed",
+      status: randomStatus,
       spend: `$${randomSpend}`,
       roi: `${randomROI}%`,
       date: formattedDate,
