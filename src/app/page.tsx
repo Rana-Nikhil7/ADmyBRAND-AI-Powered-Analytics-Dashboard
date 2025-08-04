@@ -3,10 +3,10 @@
 import { useEffect, useState, useMemo } from "react";
 import { dashboardData as mockData } from "@/lib/mock-data";
 
-// Import your master data type from your types file
-import { DashboardData } from "@/lib/types";
+// CHANGE 1: Import the 'Variants' type from framer-motion
+import { motion, Variants } from "framer-motion"
 
-import { motion } from "framer-motion"
+import { DashboardData } from "@/lib/types";
 import { DashboardHeader } from "@/components/dashboard-header"
 import { MetricsOverview } from "@/components/metrics-overview"
 import { ChartsSection } from "@/components/charts-section"
@@ -14,7 +14,8 @@ import { CampaignTable } from "@/components/campaign-table"
 import { DashboardSkeleton } from "@/components/dashboard-skeleton"
 import { DateRangePicker } from "@/components/date-range-picker";
 
-const containerVariants = {
+// CHANGE 2: Apply the 'Variants' type to your animation object
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -25,7 +26,8 @@ const containerVariants = {
   },
 }
 
-const itemVariants = {
+// CHANGE 3: Apply the 'Variants' type to your other animation object
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
@@ -38,19 +40,15 @@ const itemVariants = {
 }
 
 export default function DashboardPage() {
-  // THE FIX: Explicitly type the state to allow 'DashboardData' or 'null'
   const [data, setData] = useState<DashboardData | null>(null);
-  
   const [isLoading, setIsLoading] = useState(true);
-  // Using 'undefined' is often safer for date pickers
   const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({ from: undefined, to: undefined });
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // This is now allowed because we typed the state correctly
       setData(mockData);
       setIsLoading(false);
-    }, 1500); 
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -60,7 +58,6 @@ export default function DashboardPage() {
       const interval = setInterval(() => {
         setData((prevData) => {
           if (!prevData) return null;
-
           const newMetrics = prevData.keyMetrics.map(metric => {
             if (metric.title === 'Users') {
               const currentValue = parseInt(metric.value.replace(/,/g, ''));
@@ -69,10 +66,9 @@ export default function DashboardPage() {
             }
             return metric;
           });
-
           return { ...prevData, keyMetrics: newMetrics };
         });
-      }, 3000); 
+      }, 3000);
 
       return () => clearInterval(interval);
     }
@@ -92,7 +88,6 @@ export default function DashboardPage() {
     });
   }, [data, dateRange]);
 
-  // Added '!data' check for robustness while data is null
   if (isLoading || !data) {
     return (
       <div className="min-h-screen bg-background">
