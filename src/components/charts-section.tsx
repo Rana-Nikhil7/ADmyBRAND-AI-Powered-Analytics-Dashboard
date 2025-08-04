@@ -34,18 +34,11 @@ const trafficData = [
   { source: "Referral", visitors: 1890 },
 ]
 
+// REVERTED: The 'color' property has been removed to use your original color logic.
 const deviceData = [
-  { name: "Desktop", value: 45, color: "hsl(var(--primary))" },
-  { name: "Mobile", value: 35, color: "hsl(142, 76%, 36%)" },
-  { name: "Tablet", value: 20, color: "hsl(45, 93%, 47%)" },
-]
-
-const trafficColors = [
-  "hsl(var(--primary))",
-  "hsl(220, 14%, 96%)",
-  "hsl(215, 20%, 65%)",
-  "hsl(215, 25%, 27%)",
-  "hsl(224, 71%, 4%)",
+  { name: "Desktop", value: 45 },
+  { name: "Mobile", value: 35 },
+  { name: "Tablet", value: 20 },
 ]
 
 const chartConfig = {
@@ -163,6 +156,7 @@ export function ChartsSection() {
                     paddingAngle={2}
                     dataKey="value"
                   >
+                    {/* REVERTED: Using your original color logic */}
                     {deviceData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={`var(--chart-bar-${(index % 5) + 1})`} />
                     ))}
@@ -173,10 +167,13 @@ export function ChartsSection() {
             </ChartContainer>
             <div className="flex justify-center flex-wrap gap-4 mt-4">
               {deviceData.map((entry, index) => (
-                <div key={entry.device || entry.name} className="flex items-center space-x-2">
+                // THE BUILD ERROR FIX REMAINS HERE
+                <div key={entry.name} className="flex items-center space-x-2">
+                  {/* REVERTED: Using your original color logic */}
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: `var(--chart-bar-${(index % 5) + 1})` }} />
                   <span className="text-sm text-muted-foreground">
-                    {(entry.device || entry.name)} ({entry.visitors || entry.value}%)
+                    {/* FIX: Use 'name' and 'value' which exist in the data */}
+                    {entry.name} ({entry.value}%)
                   </span>
                 </div>
               ))}
