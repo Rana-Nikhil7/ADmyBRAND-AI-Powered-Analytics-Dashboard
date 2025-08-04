@@ -34,7 +34,6 @@ const trafficData = [
   { source: "Referral", visitors: 1890 },
 ]
 
-// REVERTED: The 'color' property has been removed to use your original color logic.
 const deviceData = [
   { name: "Desktop", value: 45 },
   { name: "Mobile", value: 35 },
@@ -116,6 +115,10 @@ export function ChartsSection() {
                     tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
                     axisLine={false}
                     tickLine={false}
+                    // THE FIX: Angle the labels to fit on mobile
+                    angle={-45}
+                    textAnchor="end"
+                    height={60} // Add height to the chart to make room for angled labels
                   />
                   <YAxis
                     stroke="hsl(var(--muted-foreground))"
@@ -156,7 +159,6 @@ export function ChartsSection() {
                     paddingAngle={2}
                     dataKey="value"
                   >
-                    {/* REVERTED: Using your original color logic */}
                     {deviceData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={`var(--chart-bar-${(index % 5) + 1})`} />
                     ))}
@@ -167,12 +169,9 @@ export function ChartsSection() {
             </ChartContainer>
             <div className="flex justify-center flex-wrap gap-4 mt-4">
               {deviceData.map((entry, index) => (
-                // THE BUILD ERROR FIX REMAINS HERE
                 <div key={entry.name} className="flex items-center space-x-2">
-                  {/* REVERTED: Using your original color logic */}
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: `var(--chart-bar-${(index % 5) + 1})` }} />
                   <span className="text-sm text-muted-foreground">
-                    {/* FIX: Use 'name' and 'value' which exist in the data */}
                     {entry.name} ({entry.value}%)
                   </span>
                 </div>
