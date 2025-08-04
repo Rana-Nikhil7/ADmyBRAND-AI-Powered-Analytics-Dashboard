@@ -33,7 +33,7 @@ To run this project locally, follow these steps:
 
 1.  **Clone the repository**
     ```bash
-    git clone [YOUR_REPOSITORY_URL]
+    git clone [[YOUR_REPOSITORY_URL](https://github.com/Rana-Nikhil7/ADmyBRAND-AI-Powered-Analytics-Dashboard.git)]
     ```
 
 2.  **Install dependencies**
